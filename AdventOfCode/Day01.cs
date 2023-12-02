@@ -8,29 +8,50 @@ public sealed class Day01 : BaseDay
 
     public Day01()
     {
-        _input = File.ReadAllText(InputFilePath).Split("\n");
+        _input = File.ReadAllLines(InputFilePath);
     }
 
-    public override ValueTask<string> Solve_1() => new(
-        _input
-            .Select(CalculateCalibrationValue)
-            .Sum()
-            .ToString()
-        );
-
-    public override ValueTask<string> Solve_2() => new($"Solution to {ClassPrefix} {CalculateIndex()}, part 2");
-
-    private static int CalculateCalibrationValue(string line)
+    public override ValueTask<string> Solve_1()
     {
-        var firstDigit = FindFirstDigit(line) ?? 0;
-        var lastDigit = FindFirstDigit(new string(line.Reverse().ToArray())) ?? 0;
+        return new ValueTask<string>(
+            _input
+                .Select(line => CalculateCalibrationValue(line,  @"(\d)"))
+                .Sum()
+                .ToString()
+        );
+    }
+
+    public override ValueTask<string> Solve_2()
+    {
+        return new ValueTask<string>(
+            _input
+                .Select(line =>CalculateCalibrationValue(line,  @"(\d)|((one)|(two)|(three)|(four)|(five)|(six)|(seven)|(eight)|(nine))"))
+                .Sum()
+                .ToString());
+    }
+
+    private static int CalculateCalibrationValue(string line, string pattern)
+    {
+        if (line.Length == 0)
+        {
+            return 0;
+        }
+
+        var firstDigit = SpelledDigitToInt(Regex.Match(line, pattern).Value);
+        var lastDigit = SpelledDigitToInt(Regex.Match(line, pattern, RegexOptions.RightToLeft).Value);
         return int.Parse($"{firstDigit}{lastDigit}");
     }
 
-    private static int? FindFirstDigit(string line)
-    {
-        const string pattern = @"\d";
-        var match = Regex.Match(line, pattern);
-        return match.Success ? int.Parse(match.Value) : null;
-    }
+    private static int SpelledDigitToInt(string digit) => digit switch {
+        "one" => 1,
+        "two" => 2,
+        "three" => 3,
+        "four" => 4,
+        "five" => 5,
+        "six" => 6,
+        "seven" => 7,
+        "eight" => 8,
+        "nine" => 9,
+        _ => int.Parse(digit)
+    };
 }
