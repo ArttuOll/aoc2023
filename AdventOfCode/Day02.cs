@@ -25,10 +25,13 @@ public sealed class Day02 : BaseDay
 
     public override ValueTask<string> Solve_2()
     {
-        return new ValueTask<string>("Not implemented.");
+        return new ValueTask<string>(
+            _input
+                .Select(game => game.GetMinimumSetOfCubes().Power())
+                .Sum().ToString());
     }
 
-    public Game ParseGame(string line)
+    public static Game ParseGame(string line)
     {
         var separatedBySemicolon = line.Split(":");
         var gameId = separatedBySemicolon[0].Split(" ")[1];
@@ -38,7 +41,7 @@ public sealed class Day02 : BaseDay
         return new Game(int.Parse(gameId), subsets);
     }
 
-    public Subset ParseSubset(string line)
+    public static Subset ParseSubset(string line)
     {
         var numberOfBlue = ParseColor(line, "blue");
         var numberOfRed = ParseColor(line, "red");
@@ -71,6 +74,26 @@ public class Game()
     public int Id { get; }
     public IEnumerable<Subset> Subsets { get; }
 
+    public Subset GetMinimumSetOfCubes()
+    {
+        return new Subset(GetFewestRequiredOfBlue(), GetFewestRequiredOfRed(), GetFewestRequiredOfGreen());
+    }
+
+    private int GetFewestRequiredOfRed()
+    {
+        return Subsets.Select(subset => subset.NumberOfRed).Max();
+    }
+
+    private int GetFewestRequiredOfBlue()
+    {
+        return Subsets.Select(subset => subset.NumberOfBlue).Max();
+    }
+
+    private int GetFewestRequiredOfGreen()
+    {
+        return Subsets.Select(subset => subset.NumberOfGreen).Max();
+    }
+
     public bool IsPossible()
     {
         return Subsets.All(subset => subset.NumberOfBlue <= BlueLimit
@@ -79,4 +102,21 @@ public class Game()
     }
 }
 
-public record Subset(int NumberOfBlue, int NumberOfRed, int NumberOfGreen);
+public class Subset()
+{
+    public Subset(int numberOfBlue, int numberOfRed, int numberOfGreen) : this()
+    {
+        NumberOfBlue = numberOfBlue;
+        NumberOfRed = numberOfRed;
+        NumberOfGreen = numberOfGreen;
+    }
+
+    public int NumberOfBlue { get; }
+    public int NumberOfRed { get; }
+    public int NumberOfGreen { get; }
+
+    public int Power()
+    {
+        return NumberOfBlue * NumberOfRed * NumberOfGreen;
+    }
+}

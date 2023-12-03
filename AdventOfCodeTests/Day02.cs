@@ -13,7 +13,7 @@ public class Day02Test
                              Game 5: 6 red, 1 blue, 3 green; 2 blue, 1 red, 2 green
                              """;
 
-        var game = new Day02().ParseGame(input);
+        var game = Day02.ParseGame(input);
 
         Assert.True(game.IsPossible());
     }
@@ -26,7 +26,7 @@ public class Day02Test
                              Game 4: 1 green, 3 red, 6 blue; 3 green, 6 red; 3 green, 15 blue, 14 red
                              """;
 
-        var game = new Day02().ParseGame(input);
+        var game = Day02.ParseGame(input);
 
         Assert.False(game.IsPossible());
     }
@@ -35,7 +35,7 @@ public class Day02Test
     public void CorrectlyParsesGames()
     {
         const string line = "Game 3: 8 green, 6 blue, 20 red; 5 blue, 4 red, 13 green; 5 green, 1 red";
-        var game = new Day02().ParseGame(line);
+        var game = Day02.ParseGame(line);
 
         Assert.Equal(3, game.Id);
         Assert.Equal(3, game.Subsets.Count());
@@ -45,10 +45,35 @@ public class Day02Test
     public void CorrectlyParsesSubsets()
     {
         const string line = "8 green, 6 blue, 20 red";
-        var subset = new Day02().ParseSubset(line);
+        var subset = Day02.ParseSubset(line);
 
         Assert.Equal(8, subset.NumberOfGreen);
         Assert.Equal(6, subset.NumberOfBlue);
         Assert.Equal(20, subset.NumberOfRed);
+    }
+
+    [Fact]
+    public void GetsMinimumSubset()
+    {
+        var subset1 = new Subset(1, 4, 5);
+        var subset2 = new Subset(3, 1, 4);
+        var subset3 = new Subset(4, 3, 1);
+        var game = new Game(1, new List<Subset> { subset1, subset2, subset3 });
+
+        var result = game.GetMinimumSetOfCubes();
+
+        Assert.Equal(4, result.NumberOfBlue);
+        Assert.Equal(4, result.NumberOfRed);
+        Assert.Equal(5, result.NumberOfGreen);
+    }
+
+    [Fact]
+    public void CalculatesPower()
+    {
+        var subset = new Subset(6, 4, 2);
+
+        var result = subset.Power();
+
+        Assert.Equal(48, result);
     }
 }
