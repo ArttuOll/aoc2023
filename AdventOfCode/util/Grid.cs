@@ -59,8 +59,6 @@ public class Grid<T>(T[][] rows) : IEnumerator<Coordinate>
     {
         var neighbors = new List<T>();
 
-        if (!IsWithinBounds(position)) throw new ArgumentException("Coordinate is out of bounds");
-
         if (IsWithinBounds(position.MoveLeft())) neighbors.Add(GetLeftNeighbor(position));
 
         if (IsWithinBounds(position.MoveRight())) neighbors.Add(GetRightNeighbor(position));
